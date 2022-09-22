@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 class Heart extends StatefulWidget {
   @override
@@ -10,20 +11,43 @@ class _HeartState extends State<Heart> with SingleTickerProviderStateMixin {
 
   AnimationController _controller;
 
-  Animation _colorAnimation;
+  Animation<Color> _colorAnimation;
+
+  Animation<double> _sizeAnimation;
+  
+  Animation _curve; // unused property
 
   @override
   void initState() {
     super.initState();
 
     _controller = AnimationController(
-      duration: Duration(milliseconds: 500),
+      duration: Duration(milliseconds: 1000),
       vsync: this,
     );
 
-    _colorAnimation = ColorTween(begin: Colors.grey[400], end: Colors.red)
-        .animate(_controller);
+    _curve = CurvedAnimation(parent: _controller, curve: Curves.slowMiddle);
 
+    _colorAnimation = ColorTween(begin: Colors.grey[400], end: Colors.red)
+        .animate(_curve);
+
+
+  _sizeAnimation = TweenSequence(
+      <TweenSequenceItem<double>>
+      [
+      TweenSequenceItem<double>(
+        tween: Tween<double>(begin: 30.0, end: 100.0),
+        weight: 50.0,
+      ),
+      TweenSequenceItem<double>(
+        tween: Tween<double>(begin: 100.0, end: 30.0),
+        weight: 50.0,
+      ),
+    ]
+    ).animate(_curve);
+  
+
+  
     _controller.addListener(() {
       print(_controller.value);
       print(_colorAnimation.value);
@@ -39,19 +63,14 @@ class _HeartState extends State<Heart> with SingleTickerProviderStateMixin {
           isFav = false;
         });
       }
-
     });
-
-
   }
-
 
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
     _controller.dispose();
-
   }
 
   @override
@@ -72,4 +91,5 @@ class _HeartState extends State<Heart> with SingleTickerProviderStateMixin {
       },
     );
   }
+
 }
